@@ -27,11 +27,46 @@ void mat_new(mat_t *M,int m,int n)
             }                             //初始化零矩阵//
 }
 }
+/*矩阵释放*/
+void mat_free(mat_t M)
+{
+    int i;
+    for(i=0;i<(M.m);i++)
+    {
+        free(M.mat[i]);
+    }
+    free(M.mat);
+}
+/*矩阵打印*/
+void mat_print(mat_t M)
+{
+    int i,j;
+    for(i=0;i<(M.m);i++)
+    {
+        for(j=0;j<(M.n);j++)
+        {
+            printf("%lf ",M.mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+/*矩阵克隆*/
+void mat_clone(mat_t A,mat_t B)//将已知矩阵B复制到一初始A中
+{
+    int i,j;
+    for(i=0;i<(B.m);i++)
+    {
+        for(j=0;j<(B.n);j++)
+        {
+            A.mat[i][j]=B.mat[i][j];
+        }
+    }
+}
 /*矩阵赋值*/
 void mat_set(mat_t M,int m,int n)
 {
    int i,j;
-   int w;
+/*   int w;
    printf("输入矩阵是/否为数量矩阵(1/2)?:\n");
    scanf("%d",&w);
    if(w==2)
@@ -39,7 +74,7 @@ void mat_set(mat_t M,int m,int n)
        printf("输入矩阵所有元素是/否均相等(1/2)?:\n");
        scanf("%d",&w);
      if(w==2)
-       {
+       {*/
            printf("请输入矩阵:\n");                 //非数量矩阵且并非所有元素均相等矩阵输入
              for(i=0;i<(M.m);i++)
                {
@@ -48,7 +83,7 @@ void mat_set(mat_t M,int m,int n)
                       scanf("%lf",&(M.mat[i][j]));
                     }
                 }
-        }
+       /* }
        else                                              //所有元素均相同矩阵输入
        {
            double h;
@@ -80,7 +115,7 @@ void mat_set(mat_t M,int m,int n)
                    M.mat[i][j]=0;
            }
        }
-    }
+    }*/
 }
 /*矩阵减法*/
 void mat_sub(mat_t R,mat_t A,mat_t B)
@@ -216,7 +251,6 @@ void vec_set(vec_t M,int n)
 void vec_print(vec_t M)      
 {
     int i;
-    printf("列向量为:\n");
     for(i=0;i<(M.n);i++)
     {
         printf("%lf ",M.vec[i]);
@@ -239,12 +273,22 @@ void mat_scalar(mat_t *K,int m,int n,int k)
 {
     if(m==n)
     {
-        int i,j,k;
+        int i,j;
         for(i=0;i<(K->n);i++)
         {
             for(j=0;j<(K->n);j++)
-                K->mat[i][j]=k;
+            {
+                if(i==j)
+                {
+                    K->mat[i][j]=k;
+                }
+           
+                else
+                {
+                    K->mat[i][j]=0;
+                }
         }
+    }
     }
     else
         exit(-1);
