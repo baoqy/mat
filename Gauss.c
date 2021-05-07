@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"mat.c"
-void Gauss(mat_t U,vec_t b,int m,int n)
+void Gauss(mat_t A,vec_t b,int m,int n)
 {
     if(m!=n)
     {
@@ -16,30 +16,38 @@ void Gauss(mat_t U,vec_t b,int m,int n)
     mat_t I;
     mat_t Mx;
     mat_t Gx;
+    mat_t L;
+    mat_t Lx;
+    mat_t Ly;
+    mat_t U;
+    mat_new(&U,m,n);
+    mat_new(&Ly,m,n);
+    mat_new(&L,m,n);
+    mat_new(&Lx,m,n);
     mat_new(&Mx,m,n+1);
     mat_new(&Gx,m,n);
     mat_new(&I,m,n);
     mat_scalar(&I,m,n,1);
     mat_new(&G,m,n);
     mat_new(&M,m,(n+1));
-    for(i=0;i<(U.m);i++)          //计算矩阵U的增广矩阵M
+    for(i=0;i<(A.m);i++)          //计算矩阵U的增广矩阵M
     {
-        for(j=0;j<(U.n);j++)
+        for(j=0;j<(A.n);j++)
         {
-            M.mat[i][j]=U.mat[i][j];
+            M.mat[i][j]=A.mat[i][j];
         }
-      M.mat[i][U.n]=b.vec[i];
+      M.mat[i][A.n]=b.vec[i];
     }
     printf("增广矩阵为:\n");
     mat_print(M);
     vec_t r;
-    vec_new(&r,(U.n));
+    vec_new(&r,(A.n));
     vec_t v;
-    vec_new(&v,(U.m));
+    vec_new(&v,(A.m));
     int k;
-    for(k=0;k<((U.n)-1);k++)
+    for(k=0;k<((A.n)-1);k++)
     {                                 //取第k个元素为1，其余均为0的行向量r
-      for(i=0;i<(U.n);i++)
+      for(i=0;i<(A.n);i++)
       {
         if(i==k)
         {
@@ -53,7 +61,7 @@ void Gauss(mat_t U,vec_t b,int m,int n)
     printf("行向量为:\n");
     vec_print(r);
                                      //取增广矩阵第j列的下半部分v  
-        for(i=0;i<(U.n);i++)
+        for(i=0;i<(A.n);i++)
         {
             if(i>k)
             {
@@ -64,33 +72,47 @@ void Gauss(mat_t U,vec_t b,int m,int n)
                 v.vec[i]=0;
             }
         } 
-  printf("列向量下部分为:\n");
-  vec_print(v);
-    for(i=0;i<(U.m);i++)
+  printf("列向量下部分为:\n");//计算算子G
+  vec_print(v);                       
+    for(i=0;i<(A.m);i++)
     {
-        for(j=0;j<(U.n);j++)
+        for(j=0;j<(A.n);j++)
         {
-            G.mat[i][j]=(v.vec[i])*(r.vec[j])/(M.mat[k][k]);
+           L.mat[i][j]= G.mat[i][j]=(v.vec[i])*(r.vec[j])/(M.mat[k][k]);
+            
         }
 }
-  printf("列向量与行向量之积为:\n");//计算算子G
+  printf("列向量与行向量之积为:\n");
   mat_print(G);
   printf("算子为:\n");
-  mat_sub(Gx,I,G);
+  mat_sub(Gx,I,G);                   //计算LU分解的L
+  mat_add(Lx,I,G);
+  if(k>0)
+{
+    mat_mul(L,Ly,Lx);
   mat_print(Gx);
+}
 if(k<((U.n)-1))
 {
     mat_mul(Mx,Gx,M);
     printf("上三角增广矩阵为:\n");
+    for(i=0;i<(A.m);i++)                 //由最后的上三角增广矩阵得到LU分解的U
+    {
+        for(j=0;j<(A.n);j++)
+        {
+            U.mat[i][j]=Mx.mat[i][j];
+        }
+    }
     mat_print(Mx);
-}
-else if(k==((U.n)-1))
-{
-    exit(-1);
 }
     mat_clone(M,Mx);  //将计算中间过程的增广矩阵和算子迭代
     mat_clone(G,Gx);
+    mat_clone(Ly,Lx);
 }
+printf("所用LU分解为L=:\n");
+mat_print(L);
+printf("所用LU分解U=:\n");
+mat_print(U);
 }
 }
  int main()
