@@ -22,7 +22,7 @@ void Gauss(mat_t U,vec_t b,int m,int n)
     mat_scalar(&I,m,n,1);
     mat_new(&G,m,n);
     mat_new(&M,m,(n+1));
-    for(i=0;i<(U.m);i++)          //矩阵U的增广矩阵M
+    for(i=0;i<(U.m);i++)          //计算矩阵U的增广矩阵M
     {
         for(j=0;j<(U.n);j++)
         {
@@ -37,8 +37,8 @@ void Gauss(mat_t U,vec_t b,int m,int n)
     vec_t v;
     vec_new(&v,(U.m));
     int k;
-    for(k=0;k<(U.n);k++)
-     {                        //取第k个元素为1，其余均为0的行向量r
+    for(k=0;k<((U.n)-1);k++)
+    {                                 //取第k个元素为1，其余均为0的行向量r
       for(i=0;i<(U.n);i++)
       {
         if(i==k)
@@ -52,7 +52,7 @@ void Gauss(mat_t U,vec_t b,int m,int n)
       }
     printf("行向量为:\n");
     vec_print(r);
-      //取增广矩阵第j列的下半部分  
+                                     //取增广矩阵第j列的下半部分v  
         for(i=0;i<(U.n);i++)
         {
             if(i>k)
@@ -73,21 +73,23 @@ void Gauss(mat_t U,vec_t b,int m,int n)
             G.mat[i][j]=(v.vec[i])*(r.vec[j])/(M.mat[k][k]);
         }
 }
-printf("列向量与行向量之积为:\n");
-mat_print(G);
-printf("算子为:\n");
-mat_sub(Gx,I,G);
-mat_print(Gx);
+  printf("列向量与行向量之积为:\n");//计算算子G
+  mat_print(G);
+  printf("算子为:\n");
+  mat_sub(Gx,I,G);
+  mat_print(Gx);
 if(k<((U.n)-1))
 {
-   mat_mul(Mx,Gx,M);
-
-printf("上三角增广矩阵为:\n");
-mat_print(Mx);
-M=Mx;
-G=Gx;
+    mat_mul(Mx,Gx,M);
+    printf("上三角增广矩阵为:\n");
+    mat_print(Mx);
 }
-else{exit(-1);}
+else if(k==((U.n)-1))
+{
+    exit(-1);
+}
+    mat_clone(M,Mx);  //将计算中间过程的增广矩阵和算子迭代
+    mat_clone(G,Gx);
 }
 }
 }
