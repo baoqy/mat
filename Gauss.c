@@ -87,7 +87,6 @@ void Gauss(mat_t A,vec_t b,int m,int n)
 if(k<((U.n)-1))
 {
     mat_mul(Mx,Gx,M);
-    printf("上三角增广矩阵为:\n");
     for(i=0;i<(A.m);i++)                 //由最后的上三角增广矩阵得到LU分解的U
     {
         for(j=0;j<(A.n);j++)
@@ -95,12 +94,14 @@ if(k<((U.n)-1))
             U.mat[i][j]=Mx.mat[i][j];
         }
     }
-    mat_print(Mx);
+  
 }
     mat_clone(M,Mx);  //将计算中间过程的增广矩阵和算子迭代
     mat_clone(G,Gx);
     mat_clone(Ly,Lx);
 }
+printf("上三角增广矩阵为:\n");
+mat_print(Mx);
 printf("所用LU分解为L=:\n");
 mat_print(L);
 printf("所用LU分解U=:\n");
