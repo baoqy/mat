@@ -38,7 +38,7 @@ void Gauss(mat_t A,vec_t b,int m,int n)
         }
       M.mat[i][A.n]=b.vec[i];
     }
-    printf("增广矩阵为:\n");
+    printf("方程的增广矩阵为:\n");
     mat_print(M);
     vec_t r;
     vec_new(&r,(A.n));
@@ -58,8 +58,6 @@ void Gauss(mat_t A,vec_t b,int m,int n)
             r.vec[i]=0;
         }
       }
-    printf("行向量为:\n");
-    vec_print(r);
                                      //取增广矩阵第j列的下半部分v  
         for(i=0;i<(A.n);i++)
         {
@@ -71,9 +69,7 @@ void Gauss(mat_t A,vec_t b,int m,int n)
             {
                 v.vec[i]=0;
             }
-        } 
-  printf("列向量下部分为:\n");//计算算子G
-  vec_print(v);                       
+        }                        
     for(i=0;i<(A.m);i++)
     {
         for(j=0;j<(A.n);j++)
@@ -82,15 +78,11 @@ void Gauss(mat_t A,vec_t b,int m,int n)
             
         }
 }
-  printf("列向量与行向量之积为:\n");
-  mat_print(G);
-  printf("算子为:\n");
   mat_sub(Gx,I,G);                   //计算LU分解的L
   mat_add(Lx,I,G);
   if(k>0)
 {
     mat_mul(L,Ly,Lx);
-  mat_print(Gx);
 }
 if(k<((U.n)-1))
 {
