@@ -7,17 +7,22 @@ typedef struct {
   double **mat;
 } mat_t;
 
-/*申请动态内存*/ new_ *free_ *mat_t new_mat(int m, int n) {
+/*申请动态内存*/
+mat_t new_mat(int m, int n) 
+{
   int i, j;
   mat_t M;
   M.mat = (double **)malloc(m * sizeof(double *));
-  for (i = 0; i < m; i++) {
+  for (i = 0; i < m; i++) 
+  {
     M.mat[i] = (double *)malloc(n * sizeof(double));
   }
   M.m = m;
   M.n = n;
-  for (i = 0; i < (M.m); i++) {
-    for (j = 0; j < (M.n); j++) {
+  for (i = 0; i < (M.m); i++)
+  {
+    for (j = 0; j < (M.n); j++) 
+    {
       M.mat[i][j] = 0;
     } //初始化零矩阵//
   }
@@ -41,108 +46,70 @@ void mat_print(mat_t M) {
     printf("\n");
   }
 }
-/*矩阵克隆*/
-// TODO: copy
-void mat_copy(mat_t A, mat_t B) //将已知矩阵B复制到一初始A中
+/*矩阵复制*/
+void mat_copy(mat_t A,mat_t B) //将已知矩阵B复制到一初始A中
 {
   int i, j;
-  for (i = 0; i < (B.m); i++) {
-    for (j = 0; j < (B.n); j++) {
-      A.mat[i][j] = B.mat[i][j];
-    }
+  for (i = 0; i < (B.m); i++) 
+  {
+    for (j = 0; j < (B.n); j++) 
+    { A.mat[i][j] = B.mat[i][j];}
   }
 }
 
-// TODO:
-mat_t new_mat_clone(mat_t A);
-/*矩阵赋值*/
-void mat_set_all(mat_t M, int m, int n) {
-  int i, j;
-  /*   int w;
-     printf("输入矩阵是/否为数量矩阵(1/2)?:\n");
-     scanf("%d",&w);
-     if(w==2)
-     {
-         printf("输入矩阵所有元素是/否均相等(1/2)?:\n");
-         scanf("%d",&w);
-       if(w==2)
-         {*/
-  printf("请输入矩阵:\n"); //非数量矩阵且并非所有元素均相等矩阵输入
-  for (i = 0; i < (M.m); i++) {
-    for (j = 0; j < (M.n); j++) {
-      scanf("%lf", &(M.mat[i][j]));
-    }
-  }
-  /* }
-  else                                              //所有元素均相同矩阵输入
-  {
-      double h;
-      printf("矩阵所有元素均为:\n");
-      scanf("%lf",&h);
-      for(i=0;i<(M.m);i++)
-      {
-          for(j=0;j<(M.n);j++)
-          {
-              M.mat[i][j]=h;
-          }
-      }
-  }
-}
-else                                                  //数量矩阵输入
+// 矩阵克隆
+mat_t new_mat_clone(mat_t A)//创建一新矩阵A*，并将A复制到A*中
 {
- double k;
-  printf("输入数量矩阵kI,k=:\n");
-  scanf("%lf",&k);
-  for(i=0;i<(M.m);i++)
-  {
-      for(j=0;j<(M.n);j++)
-      {
-          if(i==j)
-          {
-              M.mat[i][j]=k;
-          }
-          else
-              M.mat[i][j]=0;
-      }
-  }
-}*/
+    mat_t Ac=new_mat(A.m,A.n);
+    mat_copy(Ac,A);
 }
+/*矩阵赋值*/
+void mat_set_all(mat_t M) 
+{
+  int i, j;
+  printf("请输入矩阵:\n"); 
+  for (i = 0; i < (M.m); i++) 
+  {
+    for (j = 0; j < (M.n); j++) 
+    {scanf("%lf", &(M.mat[i][j]));}
+  }
+ }
 /*矩阵减法*/
-void mat_sub(mat_t R, mat_t A, mat_t B) {
-  if ((A.m) == (B.m) && (A.n) == (B.n)) {
+double mat_sub(mat_t R, mat_t A, mat_t B) 
+{
+ if(((A.m)==(B.m))&&((R.m)==(A.m))&&((A.n)==(B.n))&&((R.n)==(A.n))) 
+  {
     int i, j;
-    R.m = A.m;
-    R.n = A.n;
     for (i = 0; i < (A.m); i++) {
       for (j = 0; j < (A.n); j++) {
         (R.mat[i][j]) = (A.mat[i][j]) - (B.mat[i][j]);
       }
     }
-  } else {
-    exit(-1);
-  }
+  } else 
+  {exit(-1);}
 }
 /*矩阵加法*/
-void mat_add(mat_t R, mat_t A, mat_t B) {
-  if ((A.m) == (B.m) && (A.n) == (B.n)) {
+double mat_add(mat_t R, mat_t A, mat_t B) 
+{
+  if( (((R.m)==(A.m))&&((R.m))==(B.m))&&((R.n)==(A.n))&&((R.n)==(B.n)) )
+  {
     int i, j;
-    R.m = A.m;
-    R.n = A.n;
-    for (i = 0; i < (A.m); i++) {
-      for (j = 0; j < (A.n); j++) {
-        (R.mat[i][j]) = (A.mat[i][j]) + (B.mat[i][j]);
-      }
+    for (i = 0; i < (A.m); i++) 
+    {
+      for (j = 0; j < (A.n); j++) 
+      {(R.mat[i][j]) = (A.mat[i][j]) + (B.mat[i][j]); }
     }
-  } else {
-    exit(-1);
   }
+  else {exit(-1);}
 }
 
 /*矩阵乘法匹配判断*/
-int mat_can_mul(mat_t A, mat_t B) {
-  if ((A.n) == (B.m)) {
-    return 0;
-  } else {
+int mat_can_mul(mat_t A, mat_t B) 
+{
+  if ((A.n) == (B.m)) 
+  {return 0;}
+  else
+  {
     printf("矩阵格式不匹配，无法相乘\n");
     exit(-1);
   }
@@ -153,99 +120,163 @@ void mat_mul(mat_t R, mat_t A, mat_t B) //矩阵乘法
 {
   mat_can_mul(A, B);
   // TODO: R.m == A.m && R.n == B.n
+ if(R.m==A.m&&R.n==B.n)
+ {
   int i, j, k;
   int sum = 0;
-  for (i = 0; i < (A.m); i++) {
-    for (j = 0; j < (B.n); j++) { //(AB)ij=Sigma[a(ik)*b（kj)]
+  for (i = 0; i < (A.m); i++) 
+  {
+    for (j = 0; j < (B.n); j++) 
+    {                                //(AB)ij=Sigma[a(ik)*b（kj)]
       sum = 0;
-      for (k = 0; k < (A.n); k++) {
-        sum += (A.mat[i][k]) * (B.mat[k][j]);
-      }
+      for (k = 0; k < (A.n); k++) 
+      {sum += (A.mat[i][k]) * (B.mat[k][j]);}
       R.mat[i][j] = sum;
     }
   }
 }
-
+else
+{
+    printf("储存结果矩阵格式不匹配");
+    exit(-1);
+}
+}
 /*矩阵转置*/
-void mat_transpose(mat_t R, mat_t M) {
+void mat_transpose(mat_t R, mat_t M)
+{
   int i, j;
   // TODO: check size match
-  R.m = M.n;
-  R.n = M.m;
-
-  for (i = 0; i < (M.n); i++) {
-    for (j = 0; j < (M.m); j++) {
-      R.mat[i][j] = M.mat[j][i];
-    }
-  }
-}
-/*矩阵定标输出*/
-// TODO: 数乘 （mat_t R,mat_t A,double a); R = a*A
-double mat_scaler(mat_t M, int i, int j) //输出矩阵的（i,j)元素
+ if(R.m==M.n&&R.n==M.m)
+ {
+  for (i = 0; i < (M.n); i++)
+  {
+    for (j = 0; j < (M.m); j++) 
+    {R.mat[i][j] = M.mat[j][i];}
+  }}
+ else
 {
-  int m, n;
-  m = i - 1;
-  n = j - 1;
-  printf("所求元素为%lf\n", M.mat[m][n]);
-}
-/*矩阵元素替换*/
+    printf("储存结果矩阵格式不匹配\n");
+    exit(-1);
+}}
+/*矩阵数乘*/
+// TODO: 数乘 （mat_t R,mat_t A,double a); R = a*A
+void mat_scaler(mat_t R,mat_t A,double a)
+{
+    int i,j;
+    for(i=0;i<(A.m);i++)
+    {
+        for(j=0;j<(A.n);j++)
+        {R.mat[i][j]=a*A.mat[i][j];}
+    }}
 void mat_set(mat_t M, int i, int j, double c) //将矩阵的（i,j)元素替换为c
 {
   M.mat[i - 1][j - 1] = c;
 }
-double mat_get(mat_t M, int i, int j) {
+double mat_get(mat_t M, int i, int j) 
+{
+    if(0<i<=M.m&&0<j<=M.n)
   // TODO: make sure i \in [1,M.m], j \in [1,M.n]
-  return M.mat[i - 1][j - 1];
+    {return M.mat[i - 1][j - 1];}
+    else
+    {
+        printf("提取数据越界");
+        exit(-1);
+    }
 }
-
-mat_t new_mat_vec(int n) { return mat_new(n, 1); }
-
+//数量矩阵
+mat_t mat_scalar(mat_t M,double a)
+{
+   int m=M.m,n=M.n;
+    if(m==n)
+    {
+        int i,j;
+        for(i=0;i<m;i++)
+        {
+            for(j=0;j<n;j++)
+            {
+                if(i==j)
+                {M.mat[i][j]=a;}
+                else
+                {M.mat[i][j]=0;}
+        }}}
+return M;
+}
+mat_t new_mat_vec(int m)//定义m个元素的列向量M
+{ return new_mat(m,1); }
+mat_t new_mat_row(int n)//定义n个元素的行向量M
+{return new_mat(1,n);}
+mat_t new_vec_get(mat_t M,int j)//获取矩阵M的第j(从0开始）列为新的列向量
+{
+    int i;
+    mat_t R=new_mat_vec(M.m);
+    for(i=0;i<M.m;i++)
+    {R.mat[i][0]=M.mat[i][j];}
+    return R;
+}
 // TODO: mat_t
 // 1范数
-double norm_vec_1(vec_t M) {
+double norm_vec_1(mat_t M) 
+{
   int i;
   double sum = 0;
-  for (i = 0; i < (M.n); i++) {
-    if ((M.vec[i]) < 0) {
-      M.vec[i] = 0 - M.vec[i];
-    }
-    sum += M.vec[i];
+  for (i = 0; i < (M.n); i++) 
+  {
+    if ((M.mat[0][i]) < 0) 
+    {M.mat[0][i] = 0 - M.mat[0][i];}
+    sum += M.mat[1][i];
   }
   return sum;
 }
 //无穷范数
-double norm_infinite(vec_t M) {
+double norm_vec_infinite(mat_t M) 
+{
   int i;
-  for (i = 0; i < ((M.n) - 1); i++) {
-    if ((M.vec[i]) < 0) {
-      M.vec[i] = -M.vec[i];
-    }
+  for (i = 0; i < ((M.n) - 1); i++) 
+  {
+    if ((M.mat[0][i]) < 0) 
+    {M.mat[0][i] =0 -M.mat[0][i];}
   }
-  double max = M.vec[0];
-  for (i = 0; i < (M.n); i++) {
-    if ((M.vec[i]) < (M.vec[i + 1])) {
-      max = M.vec[i + 1];
-    }
+  double max = M.mat[0][0];
+  for (i = 0; i < (M.n)-1; i++) {
+    if ((M.mat[i][0]) < (M.mat[i+1][0])) 
+    { max = M.mat[i+1][0];}
   }
   return max;
 }
 // 2范数
-double norm_2(vec_t M) {
+double norm_vec_2(mat_t M) 
+{
   int i;
   double sum = 0;
-  for (i = 0; i < (M.n); i++) {
-    sum += (M.vec[i]) * (M.vec[i]);
-  }
+  for (i = 0; i<(M.n); i++) 
+  {sum += (M.mat[i][0]) * (M.mat[i][0]);}
   return sqrt(sum);
 }
 // F范数
-double norm_F(mat_t M) {
+double norm_F(mat_t M) 
+{
   int i, j;
   double sum = 0;
-  for (i = 0; i < (M.m); i++) {
-    for (j = 0; j < (M.n); j++) {
-      sum += (M.mat[i][j]) * (M.mat[i][j]);
-    }
+  for (i = 0; i < (M.m); i++) 
+  {
+    for (j = 0; j < (M.n); j++) 
+    {sum += (M.mat[i][j]) * (M.mat[i][j]);}
   }
   return sqrt(sum);
 }
+/*int main()
+{
+    int m,n;
+    scanf("%d%d",&m,&n);
+    mat_t A=new_mat(m,n);
+    mat_t B=new_mat(m,n);
+    mat_t R=new_mat(m,n);
+    mat_set_all(A);
+    mat_set_all(B);
+    mat_add(R,A,B);
+    mat_print(R);
+    free_mat(A);
+    free_mat(B);
+    free_mat(R);
+    return 0;
+}*/
