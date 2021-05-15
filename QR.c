@@ -8,7 +8,6 @@ void mat_QR(mat_t A,mat_t b)//n阶方阵A
     mat_t v=new_mat_vec(m);
     mat_t T=new_mat(n,n);
     mat_t bt=new_mat_vec(m);
-    mat_t Qt=new_mat(n,n);
     mat_t Ax=new_mat(n,n);
      for(j=0;j<n-1;j++)
      {
