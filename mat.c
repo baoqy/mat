@@ -213,37 +213,64 @@ mat_t new_vec_get(mat_t M,int j)//获取矩阵M的第j(从0开始）列为新的
     {R.mat[i][0]=M.mat[i][j];}
     return R;
 }
+//将矩阵M所有元素取绝对值
+mat_t mat_absolute(mat_t M)
+{
+    int i,j; 
+    for(i=0;i<M.m;i++)
+    {
+        for(j=0;j<M.n;j++)
+       {
+        if(M.mat[i][j]<0)
+        {M.mat[i][j]=0-M.mat[i][j];}
+       }
+     }
+    return M;
+}
+//求矩阵M的最大元素max
+double max(mat_t M)
+{
+    mat_t A=new_vec_get(M,0);//将列向量A初始化为矩阵M的第一（0）列
+    int i,j;
+    double max;
+    for(i=0;i<M.m;i++) //求出矩阵M每一行的最大值构成列向量A
+    {
+        for(j=0;j<M.n-1;j++)
+        {
+            if(M.mat[i][j]<M.mat[i][j+1])
+            {A.mat[i][0]=M.mat[i][j+1];}
+            else
+            {A.mat[i][0]=M.mat[i][j+1];}
+        }
+    }
+    for(i=0;i<M.m-1;i++)//求出列向量A中的最大值max
+    {
+    if(A.mat[i][0]<A.mat[i+1][0])
+    {max=A.mat[i+1][0];}
+    else
+    {max=A.mat[i][0];}
+    }
+    return max;
+}
 // TODO: mat_t
-// 1范数
+// 向量1范数
 double norm_vec_1(mat_t M) 
 {
   int i;
   double sum = 0;
-  for (i = 0; i < (M.n); i++) 
-  {
-    if ((M.mat[0][i]) < 0) 
-    {M.mat[0][i] = 0 - M.mat[0][i];}
-    sum += M.mat[1][i];
-  }
+  mat_t A=mat_absolute(M);
+  for(i=0;i<A.m;i++)
+  {sum += A.mat[0][i];}
   return sum;
 }
-//无穷范数
-double norm_vec_infinite(mat_t M) 
+//向量无穷范数
+double norm_vec_infinite(mat_t M)
 {
   int i;
-  for (i = 0; i < ((M.n) - 1); i++) 
-  {
-    if ((M.mat[0][i]) < 0) 
-    {M.mat[0][i] =0 -M.mat[0][i];}
-  }
-  double max = M.mat[0][0];
-  for (i = 0; i < (M.n)-1; i++) {
-    if ((M.mat[i][0]) < (M.mat[i+1][0])) 
-    { max = M.mat[i+1][0];}
-  }
-  return max;
+  mat_t A=mat_absolute(M);
+  return max(A);
 }
-// 2范数
+// 向量2范数
 double norm_vec_2(mat_t M) 
 {
   int i;
@@ -264,19 +291,24 @@ double norm_F(mat_t M)
   }
   return sqrt(sum);
 }
-/*int main()
+//矩阵1范数
+double norm_mat_1(mat_t M)
 {
-    int m,n;
-    scanf("%d%d",&m,&n);
-    mat_t A=new_mat(m,n);
-    mat_t B=new_mat(m,n);
-    mat_t R=new_mat(m,n);
-    mat_set_all(A);
-    mat_set_all(B);
-    mat_add(R,A,B);
-    mat_print(R);
-    free_mat(A);
-    free_mat(B);
-    free_mat(R);
-    return 0;
-}*/
+    int i,j;
+    mat_t R=mat_absolute(M);
+    mat_t A=new_mat_row(M.n);
+    for(j=0;j<R.n;j++)
+    {
+        for(i=0;i<R.m;i++)
+        {A.mat[0][j]+=R.mat[i][j];}
+    }
+return max(A);
+}
+//矩阵无穷范数
+double norm_mat_infinite(mat_t M)
+{
+    mat_t A=new_mat(M.m,M.n);
+    mat_transpose(A,M);
+    return norm_mat_1(A);
+}
+
