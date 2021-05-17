@@ -44,9 +44,9 @@ void mat_print(mat_t M)
   {
     for (j = 0; j < (M.n); j++) 
     {
-      printf("%lf ", M.mat[i][j]);
+      printf("%lf\t", M.mat[i][j]);
     }
-    printf("\n");
+    printf("\n\n");
   }
 }
 /*矩阵复制*/
@@ -126,15 +126,15 @@ void mat_mul(mat_t R, mat_t A, mat_t B) //矩阵乘法
  if(R.m==A.m&&R.n==B.n)
  {
   int i, j, k;
-  int sum = 0;
+  double sum;
   for (i = 0; i < (A.m); i++) 
   {
     for (j = 0; j < (B.n); j++) 
-    {                                //(AB)ij=Sigma[a(ik)*b（kj)]
-      sum = 0;
+    {    
+        sum=0;                           //(AB)ij=Sigma[a(ik)*b（kj)]
       for (k = 0; k < (A.n); k++) 
-      {sum += (A.mat[i][k]) * (B.mat[k][j]);}
-      R.mat[i][j] = sum;
+      {sum =sum+ (A.mat[i][k]) * (B.mat[k][j]);}
+      R.mat[i][j]=sum;
     }
   }
 }
@@ -173,8 +173,9 @@ void mat_scaler(mat_t R,mat_t A,double a)
     }}
 void mat_set(mat_t M, int i, int j, double c) //将矩阵的（i,j)元素替换为c
 {
-  M.mat[i - 1][j - 1] = c;
+  M.mat[i][j] = c;
 }
+//获取矩阵M的（i,j)元素
 double mat_get(mat_t M, int i, int j) 
 {
     if(0<i<=M.m&&0<j<=M.n)
@@ -187,22 +188,20 @@ double mat_get(mat_t M, int i, int j)
     }
 }
 //数量矩阵
-mat_t mat_scalar(mat_t M,double a)
+mat_t mat_scalar(int n,double a)
 {
-   int m=M.m,n=M.n;
-    if(m==n)
-    {
+   mat_t A=new_mat(n,n);
         int i,j;
-        for(i=0;i<m;i++)
+        for(i=0;i<n;i++)
         {
             for(j=0;j<n;j++)
             {
                 if(i==j)
-                {M.mat[i][j]=a;}
+                {A.mat[i][j]=a;}
                 else
-                {M.mat[i][j]=0;}
-        }}}
-return M;
+                {A.mat[i][j]=0;}
+        }}
+return A;
 }
 mat_t new_mat_vec(int m)//定义m个元素的列向量M
 { return new_mat(m,1); }
@@ -317,21 +316,83 @@ double norm_mat_infinite(mat_t M)
     mat_transpose(A,M);
     return norm_mat_1(A);
 }
-int main()
+//解上三角方程
+mat_t mat_U_solve(mat_t A,mat_t b)//Ax=b,A为上三角方阵且对角线元素均非0
 {
-    int m,n;
-    double n1,n2,nw;
-    scanf("%d%d",&m,&n);
-    mat_t M=new_mat(m,n);
-    mat_set_all(M);
-    mat_print(M);
-   
-    norm_mat_1(M);
-    n1=norm_mat_1(M);
-    n2=norm_F(M);
-    nw=norm_mat_infinite(M);
-    printf("%lf\n%lf\n%lf\n",n1,n2,nw);
-    free_mat(M);
-    return 0;
+   int m=A.m,n=A.n;
+   int j,k;
+   double sum;
+   mat_t x=new_mat_vec(m);
+   x.mat[m-1][0]=(b.mat[m-1][0])/(A.mat[m-1][n-1]);
+       for(j=(m-2);j>=0;j--)
+       { 
+           sum=0;
+       for(k=(m-2);k>=j;k--)
+       { sum+=(x.mat[k+1][0])*A.mat[j][k+1];}
+       x.mat[j][0]=(b.mat[j][0]-sum)/(A.mat[j][j]);
+       }
+   return x;
 }
+//解下三角方程
+mat_t mat_L_solve(mat_t A,mat_t b)//A为下三角矩阵且对角线元素非0
+{
+    int m=A.m,n=A.n;
+    mat_t At=new_mat(m,n);
+    mat_t bt=new_mat_vec(m);
+    mat_t Ax=new_mat(m,n);
+    int i,j;
+    for(i=0;i<m;i++)
+        for(j=0;j<n;j++)
+        {
+            Ax.mat[i][j]=A.mat[i][n-1-j];
+        }
 
+    for(i=0;i<m;i++)
+    {
+        bt.mat[i][0]=b.mat[n-1-i][0];
+        for(j=0;j<n;j++)
+        {
+            At.mat[i][j]=Ax.mat[n-1-i][j];
+        }
+    }
+    mat_t y=(mat_U_solve(At,bt));
+    mat_t x=new_mat_vec(m);
+    for(i=0;i<m;i++)
+{
+    x.mat[i][0]=y.mat[m-1-i][0];
+}
+return x;;
+}
+//向量b的Givens矩阵
+mat_t Givens(mat_t b,int i,int j)//b为m行列向量
+{
+    int n=b.m;
+    mat_t T=mat_scalar(n,1);
+    double c,s;
+    c=(b.mat[i][0])/(sqrt(pow(b.mat[i][0],2)+pow(b.mat[j][0],2)));
+    s=(b.mat[j][0])/(sqrt(pow(b.mat[i][0],2)+pow(b.mat[j][0],2)));
+    mat_set(T,i,i,c);
+    mat_set(T,i,j,s);
+    mat_set(T,j,i,-s);
+    mat_set(T,j,j,c);
+    return T;
+}
+/*int main()
+{
+    int m;
+    printf("向量元素个数:\n");
+    scanf("%d",&m);
+  mat_t M=new_mat(m,m);
+   mat_set_all(M);
+    mat_t b=new_mat_vec(m);
+    mat_set_all(b);
+    mat_L_solve(M,b);
+   // mat_t R=mat_R_solve(M,b);
+   // mat_print(R);
+   /// free_mat(M);
+
+  free_mat(M);
+    free_mat(b);
+  
+    return 0;
+}*/
