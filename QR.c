@@ -24,7 +24,7 @@ void mat_QR(mat_t A,mat_t b)//n阶方阵A
      printf("Givens矩阵作用后得上三角矩阵A=:\n");
      mat_print(A);
      printf("Ax=b的解向量为x=:\n");
-    mat_print(mat_R_solve(A,bt));
+    mat_print(mat_U_solve(A,bt));
 }
 int main()
 {
