@@ -13,8 +13,7 @@ void Gauss(mat_t A, mat_t b) {
     int i, j;
     mat_t M=new_mat(m,n+1);
     mat_t G=new_mat(m,n);
-    mat_t I=new_mat(m,n);
-    mat_scalar(I,1);
+    mat_t I=mat_scalar(n,1);
     mat_t Mx=new_mat(m,n+1);
     mat_t Gx=new_mat(m,n);
     mat_t L=new_mat(m,n);
@@ -53,15 +52,23 @@ void Gauss(mat_t A, mat_t b) {
        mat_copy(U,Mx);//计算LU分解的U
       }
       mat_copy(M,Mx); //将计算中间过程的增广矩阵和算子迭代
-      mat_copy(G, Gx);
-      mat_copy(Ly, Lx);
+      mat_copy(G,Gx);
+      mat_copy(Ly,Lx);
     }
-    printf("消元后上三角增广矩阵为:\n");
-    mat_print(Mx);
     printf("所用LU分解为L=:\n");
     mat_print(L);
     printf("所用LU分解U=:\n");
     mat_print(U);
+    printf("消元后上三角增广矩阵为:\n");
+    mat_print(Mx);
+    printf("方程的解向量为:\n");
+    b=new_vec_get(Mx,n);
+    for(i=0;i<m;i++)
+    {
+        for(j=0;j<n;j++)
+        {A.mat[i][j]=Mx.mat[i][j];}
+    }
+    mat_print(mat_U_solve(A,b));
   }
 }
 int main() 
