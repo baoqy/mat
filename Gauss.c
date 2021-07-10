@@ -20,6 +20,7 @@ void Gauss(mat_t A, mat_t b) {
     mat_t Lx=new_mat(m,n);
     mat_t Ly=new_mat(m,n);
     mat_t U=new_mat(m,n);
+    mat_t R=new_mat(m,n);
     for (i = 0; i < m; i++) //计算矩阵U的增广矩阵M
     {
       for (j = 0; j < n; j++) 
@@ -31,9 +32,8 @@ void Gauss(mat_t A, mat_t b) {
     int k;
     for(k=0;k<n-1;k++)
     {//取单位阵I的第K列
-       mat_t r=new_vec_get(I,k);
-       mat_t rr=new_mat_row(n);
-       mat_transpose(rr,r);
+       mat_t r=new_mat_row(n);
+       r.mat[0][k]=1;
       //取增广矩阵第k列的下半部分v
       mat_t v=new_vec_get(M,k);
       for (i = 0; i <n; i++) 
@@ -41,16 +41,15 @@ void Gauss(mat_t A, mat_t b) {
         if (i <=k) 
         {v.mat[i][0] = 0;}
       }
-      mat_mul(G,v,rr);
+      mat_mul(R,v,r);
+      mat_scaler(G,R,1/M.mat[k][k]);
       mat_sub(Gx,I,G);
-      mat_add(Lx,I,G);
+     mat_add(Lx,I,G);
       if (k > 0) 
       {mat_mul(L, Ly, Lx);}
-      if (k <(n -1)) 
-      {
        mat_mul(Mx, Gx, M);
-       mat_copy(U,Mx);//计算LU分解的U
-      }
+      mat_copy(U,Mx);//计算LU分解的U
+      
       mat_copy(M,Mx); //将计算中间过程的增广矩阵和算子迭代
       mat_copy(G,Gx);
       mat_copy(Ly,Lx);

@@ -65,6 +65,7 @@ mat_t new_mat_clone(mat_t A)//创建一新矩阵A*，并将A复制到A*中
 {
     mat_t Ac=new_mat(A.m,A.n);
     mat_copy(Ac,A);
+    return Ac;
 }
 /*矩阵赋值*/
 void mat_set_all(mat_t M) 
@@ -158,7 +159,7 @@ void mat_transpose(mat_t R, mat_t M)
   }}
  else
 {
-    printf("储存结果矩阵格式不匹配\n");
+    printf("转置储存结果矩阵格式不匹配\n");
     exit(-1);
 }}
 /*矩阵数乘*/
@@ -238,7 +239,7 @@ mat_t mat_absolute(mat_t M)
     return M;
 }
 //求矩阵M的最大元素max
-double max(mat_t M)
+double mat_max(mat_t M)
 {
     int i,j,k;
     mat_t A=new_mat_vec((M.m)*(M.n));
@@ -273,7 +274,7 @@ double norm_vec_1(mat_t M)
 double norm_vec_infinite(mat_t M)
 {
   mat_t A=mat_absolute(M);
-  return max(M);
+  return mat_max(M);
 }
 // 向量2范数
 double norm_vec_2(mat_t M) 
@@ -307,7 +308,7 @@ double norm_mat_1(mat_t M)
         for(i=0;i<R.m;i++)
         {A.mat[0][j]+=R.mat[i][j];}   
     }
-   return max(A);
+   return mat_max(A);
 }
 //矩阵无穷范数
 double norm_mat_infinite(mat_t M)
@@ -377,22 +378,71 @@ mat_t Givens(mat_t b,int i,int j)//b为m行列向量
     mat_set(T,j,j,c);
     return T;
 }
+//求y=Hx的Householder矩阵H，其中x与y的2范数相等且x≠y
+mat_t Householder(mat_t x,mat_t y)
+{
+    double a;
+    int m=x.m;
+    mat_t I=mat_scalar(m,1);
+    mat_t M=new_mat_vec(m);
+    mat_sub(M,x,y);
+    a=pow(norm_vec_2(M),2);
+    mat_t H=new_mat(m,m);
+    mat_t K=new_mat(m,m);
+    mat_t T=new_mat_row(m);
+    mat_transpose(T,M);
+    mat_mul(K,M,T);
+    mat_t K1=new_mat(m,m);
+    mat_scaler(K1,K,2/a);
+    mat_sub(H,I,K1);
+    return H;
+}
+//向量内积（数量积）
+double dot_product(mat_t v1,mat_t v2)
+{
+    int i;
+    int m=v1.m;
+    double sum=0;
+    for(i=0;i<m;i++)
+    {
+        sum+=v1.mat[i][0]*v2.mat[i][0];
+    }
+    return sum;
+}
+//用以在计算过程中判断精度是否达到要求（a），若达到要求则停止计算并且返回此时的误差b;
+double solution_judge(mat_t A,mat_t x,mat_t b,double a)
+{
+    int m=A.m,n=x.n;
+    int i,j;
+    mat_t R=new_mat(m,n);
+    mat_t R1=new_mat(m,n);
+    mat_mul(R,A,x);
+    mat_sub(R1,R,b);
+    double c=norm_vec_2(R1);
+    if(c<a)
+    {
+        return c;
+    }
+    else
+    {
+       ;
+       
+    }
+}
 /*int main()
 {
-    int m;
-    printf("向量元素个数:\n");
-    scanf("%d",&m);
-  mat_t M=new_mat(m,m);
-   mat_set_all(M);
+    int m,n;
+    printf("行数与列数:\n");
+    scanf("%d%d",&m,&n);
+    mat_t A=new_mat(m,n);
+    mat_set_all(A);
+    mat_t x=new_mat_vec(m);
+    mat_set_all(x);
     mat_t b=new_mat_vec(m);
     mat_set_all(b);
-    mat_L_solve(M,b);
-   // mat_t R=mat_R_solve(M,b);
-   // mat_print(R);
-   /// free_mat(M);
-
-  free_mat(M);
+   solution_judge(A,x,b);
+  free_mat(A);
+    free_mat(x);
     free_mat(b);
-  
     return 0;
 }*/

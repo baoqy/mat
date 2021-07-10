@@ -1,0 +1,64 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include"mat.c"
+void d_quotient(mat_t v1,mat_t v2,double k)//向量v1和v2分别是点组的x和y构成的向量，求其前k(从0计数)个元素的差商
+{
+    int i,j;
+    double a=1,b=0;
+    
+    for(j=0;j<=k;j++)
+    {
+        for(i=0;i<=k;i++)
+        {
+            if(i==j)
+            {
+                i=j+1;
+            }
+           a*=(v1.mat[j][0]-v1.mat[i][0]);
+        }
+    printf("a=%lf\n",a);
+      b+=(v2.mat[j][0]/a);
+      a=1;
+    }
+    
+//      printf("差商为%lf\n",b);
+}
+   // return b;
+
+/*double Newton(mat_t x, mat_t y,double c)//Newton法求在新坐标x=c时的函数值
+{
+    int i,j;
+    int n=x.m;
+    double c1=1,c2=0;
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<i;j++)
+        {
+            c1*=(c-x.mat[j][0]);
+        }
+        c2+=c1*d_quotient(x,y,i);
+    }
+    return c2;
+}*/
+int main()
+{
+    int n;
+    printf("点组个数n；\n");
+   scanf("%d",&n);
+   mat_t x=new_mat_vec(n);
+   mat_t y=new_mat_vec(n);
+   mat_set_all(x);
+   mat_set_all(y);
+   int i;
+   for(i=1;i<n;i++)
+   {  
+   d_quotient(x,y,i);
+   }
+  // double c;
+  // printf("新坐标x=\n");
+  // scanf("%lf",&c);
+  // printf("新坐标对应函数值为%lf\n",Newton(x,y,c));
+  free_mat(x);
+  free_mat(y);
+  return 0;
+}
